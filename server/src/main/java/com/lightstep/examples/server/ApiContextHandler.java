@@ -32,12 +32,6 @@ public class ApiContextHandler extends ServletContextHandler
     public void doGet(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException
     {
-      io.grpc.Context context = 
-        OpenTelemetry.getPropagators().getTextMapPropagator().extract(
-            io.grpc.Context.current(),
-            req,
-            HttpServletRequest::getHeader);
-
       Tracer tracer = OpenTelemetry.getTracerProvider().get("hello-server");
       Span span = tracer.spanBuilder("my-server-span").startSpan();
       try (Scope scope = tracer.withSpan(span)) {
