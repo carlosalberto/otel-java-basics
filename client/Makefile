@@ -1,7 +1,7 @@
 .PHONY: build clean
 
 build:
-	mvn package
+	../mvnw package
 
 clean:
-	mvn clean
+	../mvnw clean

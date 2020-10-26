@@ -1,5 +1,4 @@
 target/
 .idea/
 *.iml
-*jar
 dependency-reduced-pom.xml
