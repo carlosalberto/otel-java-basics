@@ -2,6 +2,7 @@ package com.lightstep.examples.client;
 
 import io.opentelemetry.OpenTelemetry;
 import io.opentelemetry.context.Scope;
+import io.opentelemetry.extensions.auto.annotations.WithSpan;
 import io.opentelemetry.trace.Tracer;
 import io.opentelemetry.trace.Span;
 import java.io.IOException;
@@ -31,16 +32,17 @@ public class App
       }
     }
 
-    static void makeRequest()
-    {
-      OkHttpClient client = new OkHttpClient();
-      Request req = new Request.Builder()
-        .url("http://localhost:9000/hello")
-        .build();
+  @WithSpan(value="make-request")
+  static void makeRequest()
+  {
+    OkHttpClient client = new OkHttpClient();
+    Request req = new Request.Builder()
+      .url("http://localhost:9000/hello")
+      .build();
 
-      try (Response res = client.newCall(req).execute()) {
-      } catch (Exception e) {
-        System.out.println(String.format("Request failed: %s", e));
-      }
+    try (Response res = client.newCall(req).execute()) {
+    } catch (Exception e) {
+      System.out.println(String.format("Request failed: %s", e));
     }
+  }
 }
