@@ -6,7 +6,7 @@ build: lightstep-opentelemetry-javaagent-0.9.0.jar
 	$(MAKE) -C client
 
 lightstep-opentelemetry-javaagent-0.9.0.jar:
-	wget ${otel_launcher_url}
+	curl -L -O ${otel_launcher_url}
 
 run-server: build
 	java -javaagent:lightstep-opentelemetry-javaagent-0.9.0.jar  \
