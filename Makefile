@@ -12,6 +12,7 @@ run-server: build
 	java -javaagent:lightstep-opentelemetry-javaagent-0.9.0.jar  \
 	-Dls.service.name=hello-server \
 	-Dotel.propagators=tracecontext,b3 \
+	-Dotel.resource.attributes="something=else,container.name=my-container" \
 	-Dotel.bsp.schedule.delay.millis=200 \
         -cp server/target/server-1.0-SNAPSHOT.jar \
         com.lightstep.examples.server.App
