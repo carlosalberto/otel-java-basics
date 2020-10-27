@@ -6,6 +6,8 @@ Handy links:
 
 * Free Lightstep Developer Account: https://bit.ly/otel-workshop
 * OTel Java Launcher: https://github.com/lightstep/otel-launcher-java/
+* Quickstart Guide: https://opentelemetry.lightstep.com/java
+* OpenTelemetry Java: https://github.com/open-telemetry/opentelemetry-java
 
 Define your Lightstep Access Token prior to run:
 
