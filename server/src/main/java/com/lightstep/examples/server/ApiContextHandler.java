@@ -7,6 +7,7 @@ import io.opentelemetry.context.Scope;
 import io.opentelemetry.trace.Span;
 import io.opentelemetry.trace.StatusCanonicalCode;
 import io.opentelemetry.trace.Tracer;
+import io.opentelemetry.trace.TracingContextUtils;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.ServletException;
@@ -18,6 +19,12 @@ import org.eclipse.jetty.servlet.ServletHolder;
 
 public class ApiContextHandler extends ServletContextHandler
 {
+  // name your tracer after the class it instruments
+  // spans started with this tracer will then 
+  // be attributed to this package
+  private static final Tracer tracer =
+      OpenTelemetry.getTracer("com.lightstep.examples.server.ApiContextHandler");
+
   public ApiContextHandler()
   {
     addServlet(new ServletHolder(new ApiServlet()), "/hello");
@@ -29,25 +36,55 @@ public class ApiContextHandler extends ServletContextHandler
     public void doGet(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException
     {
-      Tracer tracer = OpenTelemetry.getTracerProvider().get("hello-server");
-      Span span = tracer.spanBuilder("my-server-span").startSpan();
-      try (Scope scope = tracer.withSpan(span)) {
+      // the current span has automatically been created by 
+      // the servlet instrumentation
+      Span span = TracingContextUtils.getCurrentSpan();
+      
+      // define the route name using semantic conventions
+      // https://github.com/open-telemetry/opentelemetry-specification/blob/master/specification/trace/semantic_conventions/http.md#http-server-semantic-conventions
+      span.setAttribute("http.route", "hello");
+
+      // pretend to do work
+      try {
+        Thread.sleep(500);
+      } catch (InterruptedException e) {
+      }
+
+      // start a child span
+      Span childSpan = tracer.spanBuilder("my-server-span").startSpan();
+      try (Scope scope = tracer.withSpan(childSpan)) {
+        
+        // inside the new scope, getCurrentSpan returns childSpan.
+        // note that span methods can be chained.
+        TracingContextUtils.getCurrentSpan()
+                           .setAttribute("ProjectId", "456");
+          
+
+        // recordException automatically formats an exception event
+        childSpan.recordException(new RuntimeException("oops"));
+        
+        // in order for an exception to counts as an error,
+        // the status on the span must be to Error
+        childSpan.setStatus(StatusCanonicalCode.ERROR);
+        
+        // pretend to do work
         try {
           Thread.sleep(1000);
         } catch (InterruptedException e) {
         }
-
-        span.setAttribute("ProjectId", "456");
-        span.recordException(new RuntimeException("oops"));
-        span.setStatus(StatusCanonicalCode.ERROR);
-        span.addEvent("writing response",
-            Attributes.of(AttributeKey.stringKey("http.route"), "hello world"));
-
+        
         try (PrintWriter writer = res.getWriter()) {
+          
+          // events are structured logs, contextualized by the trace.
+          childSpan.addEvent("writing response",
+          Attributes.of(AttributeKey.stringKey("content"), "hello world"));
+          
           writer.write("Hello World");
         }
+
       } finally {
-        span.end();
+        // make sure to close the span
+        childSpan.end();
       }
     }
   }

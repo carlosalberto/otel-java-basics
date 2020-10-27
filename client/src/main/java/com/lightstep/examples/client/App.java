@@ -12,12 +12,18 @@ import okhttp3.Response;
 
 public class App
 {
+  private static final Tracer tracer =
+      OpenTelemetry.getTracer("com.lightstep.examples.client.App");
+
   public static void main( String[] args )
       throws Exception
     {
-      Tracer tracer = OpenTelemetry.getTracerProvider().get("hello-client");
-      Span span = tracer.spanBuilder("all requests").startSpan();
+      Span span = tracer.spanBuilder("main").startSpan();
+      
       try (Scope scope = tracer.withSpan(span)) {
+        // create five requests. notice that the 
+        // requests are linked together in the trace 
+        // by the parent
         for (int i = 0; i < 5; i++) {
           makeRequest();
         }
@@ -32,6 +38,7 @@ public class App
       }
     }
 
+  // annotations are an alternative to making spans by hand
   @WithSpan(value="make-request")
   static void makeRequest()
   {

@@ -2,7 +2,12 @@
 
 Just a basic client/server for playing with OpenTelemetry in Java.
 
-Define your Lightstep Acccess Token prior to run:
+Handy links:
+
+* Free Lightstep Developer Account: https://bit.ly/otel-workshop
+* OTel Java Launcher: https://github.com/lightstep/otel-launcher-java/
+
+Define your Lightstep Access Token prior to run:
 
 ```sh
 export LS_ACCESS_TOKEN=my-access-token-etc
