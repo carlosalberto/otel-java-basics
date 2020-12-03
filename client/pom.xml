@@ -23,12 +23,12 @@
     <dependency>
       <groupId>io.opentelemetry</groupId>
       <artifactId>opentelemetry-api</artifactId>
-      <version>0.9.1</version>
+      <version>0.11.0</version>
     </dependency>
     <dependency>
       <groupId>io.opentelemetry</groupId>
-      <artifactId>opentelemetry-extension-auto-annotations</artifactId>
-      <version>0.9.1</version>
+      <artifactId>opentelemetry-extension-annotations</artifactId>
+      <version>0.11.0</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
@@ -45,8 +45,8 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.6.1</version>
         <configuration>
-          <source>1.7</source>
-          <target>1.7</target>
+          <source>1.8</source>
+          <target>1.8</target>
         </configuration>
       </plugin>
       <plugin>

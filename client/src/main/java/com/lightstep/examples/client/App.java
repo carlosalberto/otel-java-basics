@@ -1,10 +1,10 @@
 package com.lightstep.examples.client;
 
-import io.opentelemetry.OpenTelemetry;
+import io.opentelemetry.api.OpenTelemetry;
+import io.opentelemetry.api.trace.Tracer;
+import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.context.Scope;
-import io.opentelemetry.extensions.auto.annotations.WithSpan;
-import io.opentelemetry.trace.Tracer;
-import io.opentelemetry.trace.Span;
+import io.opentelemetry.extension.annotations.WithSpan;
 import java.io.IOException;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -13,14 +13,14 @@ import okhttp3.Response;
 public class App
 {
   private static final Tracer tracer =
-      OpenTelemetry.getTracer("com.lightstep.examples.client.App");
+      OpenTelemetry.getGlobalTracer("com.lightstep.examples.client.App");
 
   public static void main( String[] args )
       throws Exception
     {
       Span span = tracer.spanBuilder("main").startSpan();
       
-      try (Scope scope = tracer.withSpan(span)) {
+      try (Scope scope = span.makeCurrent()) {
         // create five requests. notice that the 
         // requests are linked together in the trace 
         // by the parent
